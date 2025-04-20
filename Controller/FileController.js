@@ -1,10 +1,34 @@
+
 const File = require('../Model/FileModel');
+const Folder = require('../Model/FolderModel');
+const User = require('../Model/UserModel');
 const path = require('path');
 const fs = require('fs');
+const multer = require('multer');
+
+// Update destination dynamically based on folderId
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const { username, folderName } = req.uploadInfo;
+    console.log( folderName)
+    const userFolder = path.join(__dirname, '..', 'uploads', username, folderName );
+
+    // Ensure directory exists
+    await fs.promises.mkdir(userFolder, { recursive: true });
+    cb(null, userFolder);
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  }
+});
+
+const upload = multer({ storage });
+
 const uploadFile = async (req, res) => {
   try {
-    const { folderId } = req.body;
     const file = req.file;
+    const folderId = req.body.folderId || 0;
+    console.log("folderId.....",folderId)
 
     if (!file) return res.status(400).json({ message: 'No file uploaded' });
 
@@ -13,7 +37,7 @@ const uploadFile = async (req, res) => {
       path: file.path,
       type: file.mimetype,
       size: file.size,
-      folderId: folderId || 0,
+      folderId,
       userId: req.user.id 
     });
 
@@ -23,6 +47,7 @@ const uploadFile = async (req, res) => {
     res.status(500).json({ message: 'Upload failed' });
   }
 };
+
 
 // 🧾 Get files (optionally by folder)
 const getFiles = async (req, res) => {
@@ -123,4 +148,4 @@ const updateFile = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
-module.exports = { uploadFile, getFiles, deleteFile,updateFile ,downloadFile};
+module.exports = { uploadMiddleware: upload.single('file'),uploadFile, getFiles, deleteFile,updateFile ,downloadFile};
