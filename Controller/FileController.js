@@ -148,4 +148,4 @@ const updateFile = async (req, res) => {
       res.status(500).json({ message: 'Server error' });
     }
   };
-module.exports = { uploadMiddleware: upload.single('file'),uploadFile, getFiles, deleteFile,updateFile ,downloadFile};
+module.exports = { uploadFile, getFiles, deleteFile,updateFile ,downloadFile};

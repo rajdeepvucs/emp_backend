@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { uploadFile, getFiles, deleteFile,updateFile,downloadFile, uploadMiddleware } = require('../Controller/FileController');
-const resolveUploadPath = require('../Middleware/resolveUploadPath');
+const { uploadFile, getFiles, deleteFile,updateFile,downloadFile } = require('../Controller/FileController');
+const {uploadMiddleware }= require('../Middleware/resolveUploadPath');
 const {verifyToken} = require('../Middleware/AuthMiddleware'); 
 const multer = require('multer');
 const path = require('path');
@@ -23,7 +23,7 @@ const upload = multer({ storage });
 
 
 
-router.post('/upload',verifyToken, resolveUploadPath, uploadMiddleware, uploadFile);
+router.post('/upload',verifyToken, uploadMiddleware, uploadFile);
 router.get('/',verifyToken, getFiles);
 
 router.delete('/:id',verifyToken,  deleteFile);
