@@ -3,7 +3,7 @@ const sequelize = require('./db');
 const morgan = require('morgan');
 const app = express();
 const cors = require('cors');
-
+const cookieParser = require('cookie-parser');
 const logger=require('./logger')
 
 
@@ -28,11 +28,11 @@ app.use(
     },
   })
 );
-// Setup CORS
+
 const allowedOrigins = [
     'http://localhost:5173',
     'http://192.168.225.77:5173'
-    
+    *
  
   ];
 const corsOptions = {
@@ -51,17 +51,23 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-
+app.use(cookieParser()); 
   app.use(morgan("dev"));
   app.use(express.urlencoded({extended:true}))
 
   const EmpRoute = require('./Route/EmpRoute');
 app.use('/api/emp', EmpRoute);
+const fileRoutes = require('./Route/FileRoute');
+app.use('/api/files', fileRoutes);
+const userRoutes = require('./Route/UserRoute');
+app.use('/api/user', userRoutes);
+const folderRoutes = require('./Route/FolderRoute');
+app.use('/api/folders', folderRoutes);
 
 sequelize.sync({ alter: true })
     .then(() => {
         console.log("Database & tables altered!");
-        app.listen(3000, () => {
+        app.listen(5000, () => {
             console.log(`Server running on port 3000`);
         });
     })
