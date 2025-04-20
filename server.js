@@ -31,8 +31,9 @@ app.use(
 
 const allowedOrigins = [
     'http://localhost:5173',
-    'http://192.168.225.77:5173'
-    *
+    'http://192.168.225.77:5173',
+    '*'
+    
  
   ];
 const corsOptions = {
@@ -67,7 +68,7 @@ app.use('/api/folders', folderRoutes);
 sequelize.sync({ alter: true })
     .then(() => {
         console.log("Database & tables altered!");
-        app.listen(5000, () => {
+        app.listen(3000, () => {
             console.log(`Server running on port 3000`);
         });
     })

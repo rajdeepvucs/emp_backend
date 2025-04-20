@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
 
     const user = await User.create({ name, email, password });
 
-    res.status(201).json({ message: "User registered successfully", userId: user.id });
+    res.status(201).json({ message: "User registered successfully", data: user});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Registration failed" });
@@ -31,14 +31,14 @@ exports.login = async (req, res) => {
     if (!user || !(await user.isValidPassword(password))) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-
+console.log(user)
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: '1d'
     });
 
     res
     .cookie('token', token, COOKIE_OPTIONS)
-    .json({ message: "Login successful", token, userId: user.id });
+    .json({ message: "Login successful", data:{token, user} });
   } catch (err) {
     res.status(500).json({ error: "Login failed" });
   }
